@@ -1,61 +1,56 @@
-import styles from '../styles/Home.module.css'
+import React, { useState } from "react";
+import Head from "next/head";
 
-export default function Home() {
+
+const Home = () => {
+  const [notificationEnabled, setNotificationEnabled] = useState(false);
+
+  const handleNotificationPermission = () => {
+    if (Notification.permission === "granted") {
+      setNotificationEnabled(true);
+      return;
+    }
+
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        setNotificationEnabled(true);
+      }
+    });
+  };
+
+  const handleSendNotification = () => {
+    if (!("Notification" in window)) {
+      alert("브라우저에서 알림을 지원하지 않습니다.");
+      return;
+    }
+
+    if (!notificationEnabled) {
+      alert("알림 허용 권한이 없습니다.");
+      return;
+    }
+
+    new Notification("알림 예제", {
+      body: "알림을 받았습니다!",
+      icon: "icons/icon-192x192.png",
+    });
+  };
+
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+    <div>
+      <Head>
+        <title>알림 예제</title>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
+      </Head>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+      <main>
+        <h1>알림 예제</h1>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+        <button onClick={handleNotificationPermission}>알림 허용</button>
+        <button onClick={handleSendNotification}>알림 보내기</button>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
     </div>
-  )
-}
+  );
+};
+
+export default Home;
